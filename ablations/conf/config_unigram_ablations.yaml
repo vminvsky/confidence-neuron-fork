@@ -3,7 +3,7 @@ dry_run: false
 seed: 42
 
 chdir: "."
-model: EleutherAI/pythia-410m
+model: EleutherAI/pythia-2.8b
 
 dataset: stas/c4-en-10k
 use_log2_entropy: false

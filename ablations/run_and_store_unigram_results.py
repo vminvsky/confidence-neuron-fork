@@ -307,39 +307,7 @@ def run_and_store_ablation_results(args: DictConfig):
 
     # store the final_df as a feather file
     final_df = final_df.reset_index(drop=True)
-    
-    # Process neurons in smaller batches to reduce memory usage
-    if args.neuron_range is not None:
-        start = args.neuron_range.split('-')[0]
-        end = args.neuron_range.split('-')[1]
-        all_neuron_indices = list(range(int(start), int(end)))
-    else:
-        all_neuron_indices = list(range(0, model.cfg.d_mlp))
-    
-    # Process neurons in smaller batches
-    batch_size = 100  # Adjust based on your system's RAM
-    
-    for batch_start in range(0, len(all_neuron_indices), batch_size):
-        batch_end = min(batch_start + batch_size, len(all_neuron_indices))
-        batch_neuron_indices = all_neuron_indices[batch_start:batch_end]
-        batch_neurons = [f"{entropy_neuron_layer}.{i}" for i in batch_neuron_indices]
-        
-        print(f"Processing neurons {batch_start} to {batch_end-1}")
-        
-        if args.dry_run:
-            batch_neurons = batch_neurons[:10]
-            
-        # ... rest of your code using batch_neurons instead of all_neurons ...
-        
-        # Save results for this batch
-        batch_save_path = f'{save_path}/batch_{batch_start}_{batch_end-1}'
-        pathlib.Path(batch_save_path).mkdir(parents=True, exist_ok=True)
-        final_df.to_feather(f'{batch_save_path}/k{args.k}.feather')
-        
-        # Clear memory
-        del entropy_df, final_df, results
-        gc.collect()  # Force garbage collection
-        torch.cuda.empty_cache()
+    final_df.to_feather(f'{save_path}/k{args.k}.feather')
 
 
 def print_gpu_memory():
